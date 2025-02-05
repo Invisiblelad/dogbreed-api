@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: dogbreed
+spec:
+  selector:
+    matchLabels:
+      app: dogbreed
+  template:
+    metadata:
+      labels:
+        app: dogbreed
+    spec: 
+      containers: 
+      - name : dogbreed
+        image: invisiblelad/dogbreed
+        resources: 
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports: 
+        - containerPort: 8080
+        env: 
+          - name: MONGO_URL
+            value: "mongo-service"
+          - name: MONGO_PORT
+            value: "27017"
+          - name: MONGO_DATABASE
+            value: "dogbreed"
+          - name: MONGO_COLLECTION
+            value: "dogs"
+
+
+
+
+
