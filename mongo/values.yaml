@@ -8,6 +8,8 @@ env:
   MONGO_INITDB_ROOT_USERNAME: "admin"
   MONGO_INITDB_ROOT_PASSWORD: "password"
 
+serviceAccount:
+  create: true
 service:
   name: mongo-service
   port: 27017
