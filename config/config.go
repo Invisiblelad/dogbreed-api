@@ -14,12 +14,15 @@ func ConnectDB() *mongo.Client {
     // Read MongoDB connection details from environment variables
     mongoURL := os.Getenv("MONGO_URL")
     mongoPort := os.Getenv("MONGO_PORT")
-    if mongoURL == "" || mongoPort == "" {
-        log.Fatal("MONGO_URL and MONGO_PORT environment variables are required")
+    mongoUser := os.Getenv("MONGO_USERNAME")
+    mongoPass := os.Getenv("MONGO_PASSWORD")
+
+    if mongoURL == "" || mongoPort == "" || mongoUser == "" || mongoPass == "" {
+        log.Fatal("MONGO_URL, MONGO_PORT, MONGO_USERNAME, and MONGO_PASSWORD environment variables are required")
     }
 
     // Construct MongoDB connection URI
-    mongoURI := fmt.Sprintf("mongodb://%s:%s", mongoURL, mongoPort)
+    mongoURI := fmt.Sprintf("mongodb://%s:%s@%s:%s", mongoUser, mongoPass, mongoURL, mongoPort)
 
     clientOptions := options.Client().ApplyURI(mongoURI)
     client, err := mongo.Connect(context.TODO(), clientOptions)
@@ -35,7 +38,7 @@ func ConnectDB() *mongo.Client {
         log.Fatal(err)
     }
 
-    fmt.Println("Connected to MongoDB")
+    fmt.Println("Connected to MongoDB With Authentication")
     return client
 }
 

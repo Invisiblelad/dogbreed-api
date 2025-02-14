@@ -4,9 +4,12 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-env:
-  MONGO_INITDB_ROOT_USERNAME: "admin"
-  MONGO_INITDB_ROOT_PASSWORD: "password"
+
+
+mongodb:
+  username: admin
+  password: password
+  authEnabled: true
 
 serviceAccount:
   create: true
