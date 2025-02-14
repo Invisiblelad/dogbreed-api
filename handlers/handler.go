@@ -5,6 +5,7 @@ import (
 	
 	"github.com/invisiblelad/DogBreedApi/models"
 	"github.com/invisiblelad/DogBreedApi/repositiories"
+    "go.mongodb.org/mongo-driver/bson"
     "net/http"
     "github.com/go-chi/chi/v5"
 )
@@ -64,6 +65,21 @@ func (h *DogBreedHandler) DeleteDogBreed(w http.ResponseWriter, r *http.Request)
     err := h.Repo.Delete(id)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    w.WriteHeader(http.StatusOK)
+}
+
+
+func (h *DogBreedHandler)DeleteManyDogBreed(w http.ResponseWriter, r *http.Request){
+    var filter bson.M 
+
+    json.NewDecoder(r.Body).Decode(&filter)
+
+    err := h.Repo.DeleteMany(filter)
+
+    if err !=nil {
+        http.Error(w, err.Error(),http.StatusInternalServerError)
         return
     }
     w.WriteHeader(http.StatusOK)

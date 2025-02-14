@@ -77,3 +77,12 @@ func (r *DogBreedRepository) Delete(id string) error {
     _, err = r.Collection.DeleteOne(context.TODO(), bson.M{"_id": objectID})
     return err
 }
+
+func (r *DogBreedRepository)DeleteMany(filter bson.M) error {
+	_,err := r.Collection.DeleteMany(context.Background(),filter)
+
+	if err!=nil{
+		return err
+	}
+	return err
+}

@@ -31,6 +31,7 @@ func main() {
     r.Get("/dogbreeds/{id}", dogBreedHandler.GetDogBreedByID)
     r.Put("/dogbreeds/{id}", dogBreedHandler.UpdateDogBreed)
     r.Delete("/dogbreeds/{id}", dogBreedHandler.DeleteDogBreed)
+    r.Delete("/dogbreeds/many", dogBreedHandler.DeleteManyDogBreed)
 
     http.ListenAndServe(":8080", r)
 }
