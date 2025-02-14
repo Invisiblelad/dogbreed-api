@@ -1,6 +1,6 @@
 apiVersion: v2
 name: dogbreed
-description: A Helm chart for Kubernetes
+description: A Helm chart for deploying dogbreed application with two versions
 
 # A chart can be either an 'application' or a 'library' chart.
 #

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: mongodb
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: mongodb
+  serviceName: {{ .Values.service.name }}
+  template:
+    metadata:
+      labels:
+        app: mongodb
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+      - name: mongodb
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        {{- range $key, $value := .Values.env }}
+        - name: {{ $key }}
+          value: "{{ $value }}"
+        {{- end }}
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-storage
+    spec:
+      accessModes:
+      - {{ .Values.storage.accessMode }}
+      resources:
+        requests:
+          storage: {{ .Values.storage.size }}
+      storageClassName: {{ .Values.storage.storageClassName }}
