@@ -14,7 +14,8 @@ ENV GOFLAGS="-mod=vendor"
 COPY . .  
 
 # Build the application  
-RUN CGO_ENABLED=0 GOOS=linux go build -o main ./main.go  
+#RUN CGO_ENABLED=0 GOOS=linux go build -o main ./main.go  
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main ./main.go 
 
 # Stage 2: Create a lightweight container  
 FROM alpine:latest  

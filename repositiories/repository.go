@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type DogBreedRepository struct {
@@ -28,10 +29,20 @@ func (r *DogBreedRepository)Create(dogBreed *models.DogBreed)(*models.DogBreed, 
 	return dogBreed, err
 }
 
-func (r *DogBreedRepository)Getall()([]models.DogBreed,error){
+func (r *DogBreedRepository)Getall(limit, offset *int)([]models.DogBreed,error){
 	var dogBreeds []models.DogBreed
 
-	cursor , err := r.Collection.Find(context.Background(),bson.M{})
+	opts := options.Find()
+	
+	if limit !=nil{
+		opts.SetLimit(int64(*limit))
+	}
+
+	if offset !=nil{
+		opts.SetSkip(int64(*offset))
+	}
+
+	cursor , err := r.Collection.Find(context.Background(),bson.M{},opts)
 
 	if err!=nil{
 		panic(err)
@@ -78,11 +89,8 @@ func (r *DogBreedRepository) Delete(id string) error {
     return err
 }
 
-func (r *DogBreedRepository)DeleteMany(filter bson.M) error {
-	_,err := r.Collection.DeleteMany(context.Background(),filter)
 
-	if err!=nil{
-		return err
-	}
+func (r *DogBreedRepository)DeleteMany(filter bson.M) error{
+	_,err := r.Collection.DeleteMany(context.TODO(),filter)
 	return err
 }

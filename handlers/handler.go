@@ -1,13 +1,15 @@
 package handlers
 
 import (
-    "encoding/json"
-	
+	"encoding/json"
+	"strconv"
+
+	"net/http"
+
+	"github.com/go-chi/chi/v5"
 	"github.com/invisiblelad/DogBreedApi/models"
 	"github.com/invisiblelad/DogBreedApi/repositiories"
-    "go.mongodb.org/mongo-driver/bson"
-    "net/http"
-    "github.com/go-chi/chi/v5"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type DogBreedHandler struct {
@@ -30,7 +32,24 @@ func (h *DogBreedHandler) CreateDogBreed(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *DogBreedHandler) GetAllDogBreeds(w http.ResponseWriter, r *http.Request) {
-    dogBreeds, err := h.Repo.Getall()
+    limitStr := r.URL.Query().Get("limit")
+    offsetStr := r.URL.Query().Get("offset")
+    var limit, offset *int
+
+    if limitStr!= "" {
+        if val, err := strconv.Atoi(limitStr); err == nil &&val > 0 {
+            limit = &val
+        }
+    }
+
+    if offsetStr != ""{
+        if val,err := strconv.Atoi(offsetStr); err == nil && val >= 0{
+            offset = &val
+        }
+        
+    }
+
+    dogBreeds, err := h.Repo.Getall(limit,offset)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
@@ -70,17 +89,24 @@ func (h *DogBreedHandler) DeleteDogBreed(w http.ResponseWriter, r *http.Request)
     w.WriteHeader(http.StatusOK)
 }
 
-
 func (h *DogBreedHandler)DeleteManyDogBreed(w http.ResponseWriter, r *http.Request){
-    var filter bson.M 
 
-    json.NewDecoder(r.Body).Decode(&filter)
+    var filter bson.M
 
-    err := h.Repo.DeleteMany(filter)
+    err := json.NewDecoder(r.Body).Decode(&filter)
 
-    if err !=nil {
-        http.Error(w, err.Error(),http.StatusInternalServerError)
+    if err !=nil{
+        http.Error(w,"Invalid request body", http.StatusBadRequest)
         return
     }
+
+    err = h.Repo.DeleteMany(filter)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
     w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(map[string]string{"message": "Dog breeds deleted successfully"})
+
 }
