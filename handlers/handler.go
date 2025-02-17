@@ -34,22 +34,26 @@ func (h *DogBreedHandler) CreateDogBreed(w http.ResponseWriter, r *http.Request)
 func (h *DogBreedHandler) GetAllDogBreeds(w http.ResponseWriter, r *http.Request) {
     limitStr := r.URL.Query().Get("limit")
     offsetStr := r.URL.Query().Get("offset")
-    var limit, offset *int
+    pageStr := r.URL.Query().Get("page")
+    search := r.URL.Query().Get("search")
+    var limit, offset, page *int
 
     if limitStr!= "" {
         if val, err := strconv.Atoi(limitStr); err == nil &&val > 0 {
             limit = &val
         }
     }
-
     if offsetStr != ""{
         if val,err := strconv.Atoi(offsetStr); err == nil && val >= 0{
             offset = &val
-        }
-        
+        }   
     }
-
-    dogBreeds, err := h.Repo.Getall(limit,offset)
+    if pageStr != "" {
+        if val, err := strconv.Atoi(pageStr); err == nil && val > 0 {
+            page = &val
+        }
+    }
+    dogBreeds, err := h.Repo.Getall(limit,offset,page, &search)
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return

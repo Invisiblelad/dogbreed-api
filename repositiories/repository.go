@@ -29,7 +29,7 @@ func (r *DogBreedRepository)Create(dogBreed *models.DogBreed)(*models.DogBreed, 
 	return dogBreed, err
 }
 
-func (r *DogBreedRepository)Getall(limit, offset *int)([]models.DogBreed,error){
+func (r *DogBreedRepository)Getall(limit, offset, page *int, search *string)([]models.DogBreed,error){
 	var dogBreeds []models.DogBreed
 
 	opts := options.Find()
@@ -37,12 +37,18 @@ func (r *DogBreedRepository)Getall(limit, offset *int)([]models.DogBreed,error){
 	if limit !=nil{
 		opts.SetLimit(int64(*limit))
 	}
-
 	if offset !=nil{
 		opts.SetSkip(int64(*offset))
 	}
-
-	cursor , err := r.Collection.Find(context.Background(),bson.M{},opts)
+	if page !=nil&&limit!=nil{
+		skip := (*page -1)*(*limit)
+		opts.SetSkip(int64(skip))
+	}
+	filter := bson.M{}
+	if search !=nil && *search != ""{
+		filter["name"] = bson.M{"$regex": "^" + *search + "$", "$options": "i"}
+	}
+	cursor , err := r.Collection.Find(context.Background(),filter,opts)
 
 	if err!=nil{
 		panic(err)
