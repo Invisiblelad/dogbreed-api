@@ -62,24 +62,34 @@ pipeline {
         stage('Commit & Push Changes') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'github_creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'github_creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh """
                         git config --global user.email "jenkins@example.com"
                         git config --global user.name "Jenkins"
 
-                        # Ensure we are on the feature branch
+                        # Fetch latest changes
+                        git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
+
+                        # Stash uncommitted changes
+                        git stash || echo "No changes to stash"
+
+                        # Checkout feature branch
                         git checkout feature
-                        git fetch origin feature
 
-                        # Apply latest remote changes before committing new ones
-                        git rebase origin/feature || (git rebase --abort && exit 1)
+                        # Pull latest changes with rebase
+                        git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git feature --rebase || (git rebase --abort && exit 1)
 
-                        # Commit the updated Helm values file
+                        # Apply stashed changes
+                        git stash pop || echo "No stashed changes to apply"
+
+                        # Add modified values.yaml
                         git add ${HELM_VALUES}
-                        git commit -m "Update Helm values.yaml with new tag ${COMMIT_HASH}"
 
-                        # Push changes (fast-forward only)
-                        git push origin feature
+                        # Commit changes
+                        git commit -m "Updated helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes to commit"
+
+                        # Push changes
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git feature
                         """
                     }
                 }
