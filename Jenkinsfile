@@ -68,7 +68,7 @@ pipeline {
                         git config --global user.name "Jenkins"
 
                         # Fetch latest changes
-                        git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git
+                        git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/dogbreed-api.git
 
                         # Stash uncommitted changes
                         git stash || echo "No changes to stash"
@@ -77,7 +77,7 @@ pipeline {
                         git checkout feature
 
                         # Pull latest changes with rebase
-                        git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git feature --rebase || (git rebase --abort && exit 1)
+                        git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/dogbreed-api.git feature --rebase || (git rebase --abort && exit 1)
 
                         # Apply stashed changes
                         git stash pop || echo "No stashed changes to apply"
@@ -89,7 +89,7 @@ pipeline {
                         git commit -m "Updated helm values.yaml with tag ${COMMIT_HASH} [ci skip]" || echo "No changes to commit"
 
                         # Push changes
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/helm.git feature
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Invisiblelad/dogbreed-api.git feature
                         """
                     }
                 }
