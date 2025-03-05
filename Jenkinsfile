@@ -66,11 +66,15 @@ pipeline {
                         sh """
                         git config --global user.email "jenkins@example.com"
                         git config --global user.name "Jenkins"
-                        git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/invisiblelad/dogbreed-api.git
-                        git checkout feature
+
+                        # Ensure we're on the right branch & commit changes first
                         git add ${HELM_VALUES}
                         git commit -m "Update Helm values.yaml with new tag ${COMMIT_HASH}"
-                        git push origin feature
+
+                        # Securely push changes using credential helper
+                        git remote set-url origin https://github.com/invisiblelad/dogbreed-api.git
+                        git checkout feature
+                        git push https://${GIT_USER}:$(echo $GIT_PASS | sed 's/./*/g')@github.com/invisiblelad/dogbreed-api.git feature
                         """
                     }
                 }
