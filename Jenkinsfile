@@ -62,14 +62,17 @@ pipeline {
         stage('Commit & Push Changes') {
             steps {
                 script {
-                    sh """
-                    git config --global user.email "jenkins@example.com"
-                    git config --global user.name "Jenkins"
-                    git checkout feature
-                    git add ${HELM_VALUES}
-                    git commit -m "Update Helm values.yaml with new tag ${COMMIT_HASH}"
-                    git push origin feature
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'github_creds', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        sh """
+                        git config --global user.email "jenkins@example.com"
+                        git config --global user.name "Jenkins"
+                        git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/invisiblelad/dogbreed-api.git
+                        git checkout feature
+                        git add ${HELM_VALUES}
+                        git commit -m "Update Helm values.yaml with new tag ${COMMIT_HASH}"
+                        git push origin feature
+                        """
+                    }
                 }
             }
         }
