@@ -1,7 +1,11 @@
 replicaCount: 1
 image:
   repository: invisiblelad/dogbreed
+<<<<<<< Updated upstream
   tagV1: 34cecb3
+=======
+  tagV1: 2fc1eea
+>>>>>>> Stashed changes
   tagV2: tagV1:
   pullPolicy: IfNotPresent
 
