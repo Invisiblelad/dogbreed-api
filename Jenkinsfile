@@ -72,9 +72,9 @@ pipeline {
                         git commit -m "Update Helm values.yaml with new tag ${COMMIT_HASH}"
 
                         # Securely push changes using credential helper
-                        git remote set-url origin https://github.com/invisiblelad/dogbreed-api.git
+                        git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/invisiblelad/dogbreed-api.git
                         git checkout feature
-                        git push https://${GIT_USER}:$(echo $GIT_PASS | sed 's/./*/g')@github.com/invisiblelad/dogbreed-api.git feature
+                        git push origin feature
                         """
                     }
                 }
