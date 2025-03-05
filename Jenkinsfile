@@ -52,7 +52,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    sed -i 's|tagV2: .*|tagV2: tagV1:|g' ${HELM_VALUES}
+                    sed -i 's|tagV2: .*|tagV2: ${COMMIT_HASH}|g' ${HELM_VALUES}
                     sed -i 's|tagV1: .*|tagV1: ${COMMIT_HASH}|g' ${HELM_VALUES}
                     """
                 }
