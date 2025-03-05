@@ -1,8 +1,8 @@
 replicaCount: 1
 image:
   repository: invisiblelad/dogbreed
-  tagV1: 34cecb3
-  tagV2: 34cecb3
+  tagV1: bc4ce1d
+  tagV2: tagV1:
   pullPolicy: IfNotPresent
 
 env:
