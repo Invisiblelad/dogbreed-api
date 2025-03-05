@@ -67,13 +67,18 @@ pipeline {
                         git config --global user.email "jenkins@example.com"
                         git config --global user.name "Jenkins"
 
-                        # Ensure we're on the right branch & commit changes first
+                        # Ensure we are on the feature branch
+                        git checkout feature
+                        git fetch origin feature
+
+                        # Apply latest remote changes before committing new ones
+                        git rebase origin/feature || (git rebase --abort && exit 1)
+
+                        # Commit the updated Helm values file
                         git add ${HELM_VALUES}
                         git commit -m "Update Helm values.yaml with new tag ${COMMIT_HASH}"
 
-                        # Securely push changes using credential helper
-                        git remote set-url origin https://${GIT_USER}:${GIT_PASS}@github.com/invisiblelad/dogbreed-api.git
-                        git checkout feature
+                        # Push changes (fast-forward only)
                         git push origin feature
                         """
                     }
